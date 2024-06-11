@@ -1,3 +1,7 @@
+설치:
+1. `npm install`
+2. `npm start`
+
 ```
 GustoMateApp/
 │
