@@ -1,3 +1,4 @@
+```
 GustoMateApp/
 │
 ├── __tests__/              # 테스트 파일 디렉터리
@@ -35,3 +36,4 @@ GustoMateApp/
 ├── README.md               # 프로젝트 설명 파일
 ├── tsconfig.json           # TypeScript 설정 파일
 └── .DS_Store               # macOS 시스템 파일
+```
