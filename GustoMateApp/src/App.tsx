@@ -1,64 +1,39 @@
 import React from 'react';
-import {Button, StyleSheet, Text, View} from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Home from './screens/Home';
+import Test1 from './screens/Test1';
+import Test2 from './screens/Test2';
+import SignIn from './screens/SignIn';
+import OCR from './screens/OCR';
+import Survey from './screens/Survey';
+import AddIngredient from './screens/AddIngredient';
 
-export type Props = {
-  name: string;
-  baseEnthusiasmLevel?: number;
-}
+const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
-const App: React.FC<Props> = ({
-  name,
-  baseEnthusiasmLevel = 0,
-}) => {
-  const [enthusiasmLevel, setEnthusiasmLevel] = React.useState(
-    baseEnthusiasmLevel
-  );
+const HomeStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="Home" component={Home} />
+    <Stack.Screen name="OCR" component={OCR} />
+    <Stack.Screen name="AddIngredient" component={AddIngredient} />
+  </Stack.Navigator>
+);
 
-  const onIncrement = () => 
-    setEnthusiasmLevel(enthusiasmLevel + 1);
-  const onDecrement = () =>
-    setEnthusiasmLevel(
-      enthusiasmLevel > 0 ? enthusiasmLevel - 1 : 0,
-    );
 
-  const getExclamationMarks = (numChars: number) => 
-    numChars > 0 ? Array(numChars + 1).join('!') : '';
-
+const App: React.FC = () => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.greeting}>
-        Hello {name}
-        {getExclamationMarks(enthusiasmLevel)}
-      </Text>
-      <View>
-        <Button
-          title="Increase enthusiasm"
-          accessibilityLabel='increment'
-          onPress={onIncrement}
-          color="blue"
-        />
-        <Button
-          title="Decrease enthusiasm"
-          accessibilityLabel="decrement"
-          onPress={onDecrement}
-          color="red"
-        />
-      </View>
-    </View>
+    <NavigationContainer>
+      <Tab.Navigator initialRouteName="Home">
+        <Tab.Screen name="Test1" component={Test1} />
+        <Tab.Screen name="HomeStack" component={HomeStack} />
+        <Tab.Screen name="Test2" component={Test2} />
+        <Tab.Screen name="SignIn" component={SignIn} />
+        <Tab.Screen name="Survey" component={Survey} />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  greeting: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    margin: 16,
-  },
-});
 
 export default App;
