@@ -1,0 +1,59 @@
+{
+    "users": [
+        {
+            "username": "testUser1"
+        }
+    ],
+    "items": [
+        {
+            "name": "달걀",
+            "description": "달걀은 달걀이다.",
+            "expiration": "2024/6/7"
+        },
+        { 
+            "name": "달걀",
+            "description": "달걀은 달걀이다.",
+            "expiration": "2024/6/10"
+        },
+        { 
+            "name": "달걀",
+            "description": "달걀은 달걀이다.",
+            "expiration": "2024/6/10"
+        },
+        { 
+            "name": "달걀",
+            "description": "달걀은 달걀이다.",
+            "expiration": "2024/6/10"
+        },
+        { 
+            "name": "달걀",
+            "description": "달걀은 달걀이다.",
+            "expiration": "2024/6/27"
+        },
+        { 
+            "name": "달걀",
+            "description": "달걀은 달걀이다.",
+            "expiration": "2024/7/3"
+        },
+        { 
+            "name": "달걀",
+            "description": "달걀은 달걀이다.",
+            "expiration": "2024/7/11"
+        },
+        { 
+            "name": "달걀",
+            "description": "달걀은 달걀이다.",
+            "expiration": "2024/9/12"
+        },
+        { 
+            "name": "달걀",
+            "description": "달걀은 달걀이다.",
+            "expiration": "2024/9/15"
+        },
+        { 
+            "name": "달걀",
+            "description": "달걀은 달걀이다.",
+            "expiration": "2024/12/5"
+        }
+    ]
+}
