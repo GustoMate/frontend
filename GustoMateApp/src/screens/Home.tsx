@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, SafeAreaView, Platform, TouchableOpacity } from
 import GlobalStyles from '../styles/GlobalStyles';
 import { useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import Refrigerator from './Refrigerator';
+import OCR from './OCR';
 
 
 const items = [
@@ -68,7 +68,7 @@ const Home: React.FC = () => {
           </View>
         ))}
       </View>
-      <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('Refrigerator')}>
+      <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('OCR')}>
         <Text style={styles.addButtonText}>+</Text>
       </TouchableOpacity>
     </SafeAreaView>

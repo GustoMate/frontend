@@ -28,6 +28,7 @@ const Survey: React.FC = () => {
                         <Text> Do you like React Native?</Text>
                         <Button title='Yes' onPress={() => setResponse1('Yes')} />
                         <Button title='No' onPress={() => setResponse1('No')} />
+                        <Button title="Next" onPress={() => setCurrentPage(currentPage + 1)} />
                     </View>
                 );
             default:
