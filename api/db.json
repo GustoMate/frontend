@@ -55,5 +55,24 @@
             "description": "달걀은 달걀이다.",
             "expiration": "2024/12/5"
         }
+    ],
+    "receipt": [
+        {
+            "images": "images/영수증.jpg"
+        }
+    ],
+    "receiptList": [
+        {
+            "name": "돈까스",
+            "description": "브라운돈가스 허니버터눈꽃치즈돈까스",
+            "number": "1",
+            "expiration": "2024/6/7"
+        },
+        {
+            "name": "돈까스",
+            "description": "브라운돈가스 허니버터눈꽃치즈돈까스",
+            "number": "1",
+            "expiration": "2024/6/7"
+        }
     ]
 }
