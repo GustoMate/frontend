@@ -18,7 +18,7 @@ const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 const HomeStack = () => (
-  <Stack.Navigator>
+  <Stack.Navigator >
     <Stack.Screen name="Home" component={Home} />
     <Stack.Screen name="OCR" component={OCR} />
     <Stack.Screen name="AddIngredient" component={AddIngredient} />
