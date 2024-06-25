@@ -37,7 +37,6 @@ const Home: React.FC = () => {
         const response = await fetch(`${baseURL}/items`);
         const data = await response.json();
         if (response.ok) {
-          console.log('data:', data[0].items);
           setItemList(data);
         }
       } catch (error) {
