@@ -7,3 +7,8 @@
         tools:targetApi="28"
         tools:ignore="GoogleAppIndexingWarning"/>
 </manifest>
+
+<activity
+    android:name=".PhMainActivity"
+    android:windowSoftInputMode="adjustNothing">
+</activity>

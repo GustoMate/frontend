@@ -3,8 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from './screens/Home';
-import Test1 from './screens/Test1';
-import Test2 from './screens/Test2';
 import SignIn from './screens/SignIn';
 import OCR from './screens/OCR';
 import Survey from './screens/Survey';
@@ -13,6 +11,11 @@ import Market from './screens/Market';
 import MarketSearch from './screens/Market';
 import ProductDetail from './screens/ProductDetail';
 import Chat from './screens/Chat';
+import Question from './screens/Question';
+import RecipeResult from './screens/RecipeResult';
+import RecipeDetail from './screens/RecipeDetail';
+
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -37,6 +40,16 @@ const MarketStack = () => {
   );
 };
 
+const RecipeStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Question" component={Question} />
+      <Stack.Screen name="RecipeResult" component={RecipeResult} />
+      <Stack.Screen name="RecipeDetail" component={RecipeDetail} />
+    </Stack.Navigator>
+  );
+};
+
 
 const App: React.FC = () => {
   return (
@@ -44,7 +57,7 @@ const App: React.FC = () => {
       <Tab.Navigator initialRouteName="Home">
         <Tab.Screen name="HomeStack" component={HomeStack} options={{ headerShown: false }}/>
         <Tab.Screen name="Market" component={MarketStack} options={{ headerShown: false }}/>
-        <Tab.Screen name="Recipe" component={Test2} />
+        <Tab.Screen name="Recipe" component={RecipeStack} options={{ headerShown: false }}/>
         <Tab.Screen name="SignIn" component={SignIn} />
         <Tab.Screen name="Survey" component={Survey} />
       </Tab.Navigator>

@@ -29,13 +29,11 @@ const ProductDetailScreen = () => {
 
   const getTagColor = (daysLeft: number): string => {
     if (daysLeft <= 3) {
-      return '#fd826a'; 
+      return '#FF7A00'; 
     } else if (daysLeft <= 7) {
-      return '#fac863'; 
-    } else if (daysLeft <= 30) {
-      return '#8dc891'; 
+      return '#FFC700'; 
     } else {
-      return '#79b6f2'; 
+      return '#4ECB71'; 
     }
   };
 
@@ -60,7 +58,7 @@ const ProductDetailScreen = () => {
           <Text style={styles.productExpirDate}>{product.expirDate}</Text>
           <View style={styles.tagContainer}>
             <View style={[styles.tag, { backgroundColor: getTagColor(daysLeft) }]}>
-              <Text style={styles.tagText}>{daysLeft}일 남음</Text>
+              <Text style={styles.tagText}>유통기한 {daysLeft}일 남음</Text>
             </View>
             {isExpiringSoon && (
               <View style={[styles.tag, styles.expiringSoonTag]}>
@@ -161,7 +159,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   expiringSoonTag: {
-    backgroundColor: 'red',
+    backgroundColor: '#FF3D00',
   },
   tagText: {
     color: '#fff',
@@ -192,7 +190,7 @@ const styles = StyleSheet.create({
   },
   messageButton: {
     flex: 1,
-    backgroundColor: '#007BFF',
+    backgroundColor: '#4ECB71',
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderRadius: 8,

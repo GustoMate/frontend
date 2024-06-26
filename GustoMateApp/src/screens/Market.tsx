@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import Images from '../constants/images';
 
 interface Product {
@@ -173,14 +174,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   username: {
-    color: '#007BFF',
+    color: '#4ECB71',
     fontWeight: 'bold',
   },
   productContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 16,
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: '#ddd',
     paddingBottom: 16,
   },
@@ -224,10 +225,12 @@ const styles = StyleSheet.create({
   summaryContainer: {
     marginTop: 8,
     padding: 2,
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: '#ddd',
     borderRadius: 16,
     alignSelf: 'flex-start',
+    alignContent: 'center',
+    justifyContent: 'center',
   },
   productSummary: {
     fontSize: 12,

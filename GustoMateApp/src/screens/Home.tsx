@@ -54,9 +54,9 @@ const Home: React.FC = () => {
     const diffTime = expirationDate.getTime() - now.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays <= 7) {
+    if (diffDays <= 3) {
       return styles.red;
-    } else if (diffDays <= 14) {
+    } else if (diffDays <= 7) {
       return styles.orange;
     } else {
       return styles.green;
@@ -75,7 +75,7 @@ const Home: React.FC = () => {
           </View>
         ))}
       </View>
-      <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('OCR')}>
+      <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddIngredient')}>
         <Text style={styles.addButtonText}>+</Text>
       </TouchableOpacity>
     </SafeAreaView>

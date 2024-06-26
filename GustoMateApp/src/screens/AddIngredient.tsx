@@ -13,7 +13,7 @@ const AddIngredient: React.FC = () => {
 
     const toggleEditingDate = () => {
         setIsEditingDate(!isEditingDate);
-    }
+    }   
 
     useEffect(() => {
         const fetchReceipt = async () => {
@@ -37,7 +37,7 @@ const AddIngredient: React.FC = () => {
 
     return(
         <SafeAreaView style={GlobalStyles.AndroidSafeArea1}>
-            <View>
+            <View style={styles.container}>
                 <Text style={styles.header}>냉장고 재료 등록하기</Text>
                 <Image source={require('../assets/images/receipt.jpg')} style={styles.receiptImage}/>
                 <View style={styles.dataContainer}>
@@ -98,16 +98,20 @@ const AddIngredient: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-    continaer: {
-        padding: 20,
-    },
+    container: {
+        flex: 1,
+        padding: 16,
+        backgroundColor: '#fff',
+      },
     header: {
-        fontSize: 24,
+        fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 20,
+        color: '#323232',
     },
     receiptImage: {
-        width: '100%',
+        width: '90%',
+        backgroundColor: '#515151',
         height: 150,
         resizeMode: 'contain',
         marginBottom: 20,

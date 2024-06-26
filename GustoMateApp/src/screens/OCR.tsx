@@ -4,11 +4,14 @@ import { useNavigation } from '@react-navigation/native';
 import GlobalStyles from '../styles/GlobalStyles';
 import AddIngredient from './AddIngredient';
 
-const OCR: React.FC = () => {
+const OCRScreen = () => {
     const navigation = useNavigation();
 
     return (
         <SafeAreaView style={GlobalStyles.AndroidSafeArea1}>
+            <View style={styles.imageContainer}>
+
+            </View>
             <Text>OCR here!</Text>
             <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddIngredient')}>
                 <Text style={styles.addButtonText}>+</Text>
@@ -45,4 +48,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default OCR;
+export default OCRScreen;
