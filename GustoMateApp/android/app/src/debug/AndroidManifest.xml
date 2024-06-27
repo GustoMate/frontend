@@ -5,5 +5,13 @@
     <application
         android:usesCleartextTraffic="true"
         tools:targetApi="28"
-        tools:ignore="GoogleAppIndexingWarning"/>
+        tools:ignore="GoogleAppIndexingWarning">
+        
+        <activity
+            android:name=".PhMainActivity"
+            android:windowSoftInputMode="adjustNothing">
+        </activity>
+
+    </application>
+
 </manifest>
