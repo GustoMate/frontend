@@ -12,13 +12,16 @@ const WelcomeScreen = () => {
       <Text style={styles.logo}>GustoMate</Text>
       <TouchableOpacity 
         style={styles.button} 
-        onPress={() => navigation.navigate('SignIn')}
+        onPress={() => navigation.navigate('Login')}
       >
         <Text style={styles.buttonText}>로그인하기</Text>
       </TouchableOpacity>
-      <Text style={styles.footerText}>
-        처음 방문하신다면? <Text style={styles.signupLink}>회원가입하기</Text>
-      </Text>
+      <View style={styles.footerContainer}>
+        <Text style={styles.footerText}>처음 방문하신다면?</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+          <Text style={styles.signupLink}>회원가입 하기</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -32,7 +35,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 20,
     color: '#323232',
     textAlign: 'center',
   },
@@ -41,13 +44,13 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 20,
     color: '#323232',
     textAlign: 'center',
     marginBottom: 16,
   },
   logo: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: 'bold',
     color: '#323232',
     marginBottom: 32,
@@ -55,13 +58,17 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#4ECB71',
     paddingVertical: 12,
-    paddingHorizontal: 32,
+    paddingHorizontal: 45,
     borderRadius: 8,
     marginBottom: 16,
   },
   buttonText: {
     color: '#FFF',
     fontSize: 16,
+  },
+  footerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   footerText: {
     fontSize: 14,
@@ -70,6 +77,8 @@ const styles = StyleSheet.create({
   signupLink: {
     color: '#4ECB71',
     fontWeight: 'bold',
+    textDecorationLine: 'underline',
+    marginLeft: 4,
   },
 });
 
