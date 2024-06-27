@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView, Keyboard } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView, Keyboard, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import GlobalStyles from '../styles/GlobalStyles';
 
 const QuestionScreen = () => {
 const [foodType, setFoodType] = useState('');
@@ -19,6 +20,7 @@ const handleSubmit = () => {
 };
 
 return (
+    <SafeAreaView style={GlobalStyles.AndroidSafeArea1}>
     <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
             <Text style={styles.headerText}>
@@ -95,6 +97,7 @@ return (
                 <Text style={[styles.submitButtonText, !isButtonActive && styles.disabledButtonText]}>추천받기</Text>
             </TouchableOpacity>
     </View>
+    </SafeAreaView>
     );
 };
 
@@ -108,10 +111,10 @@ const styles = StyleSheet.create({
         padding: 5,
     },
     headerText: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 20,
-        color: '#4ECB71',
+        color: '#323232',
     },
     requiredText: {
         fontSize: 12,
@@ -123,8 +126,10 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     sectionTitle: {
-        fontSize: 14,
+        fontSize: 16,
         fontWeight: 'bold',
+        color: '#323232',
+        paddingHorizontal: 8,
         marginBottom: 10,
     },
     buttonContainer: {

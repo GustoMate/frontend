@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
+import { StyleSheet, View, Text, Image, SafeAreaView, TouchableOpacity } from 'react-native';
+import GlobalStyles from '../styles/GlobalStyles';
 
 const ProductDetailScreen = () => {
   const route = useRoute();
@@ -26,59 +27,61 @@ const ProductDetailScreen = () => {
 
   const daysLeft = getDaysLeft(product.expirDate);
   const isExpiringSoon = daysLeft <= 3;
-
-  const getTagColor = (daysLeft: number): string => {
+  
+  const getColor = (daysLeft: number): string => {
     if (daysLeft <= 3) {
-      return '#FF7A00'; 
+      return '#F44336'; 
     } else if (daysLeft <= 7) {
-      return '#FFC700'; 
+      return '#FF9800'; 
     } else {
-      return '#4ECB71'; 
+      return '#4CAF50'; 
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Image source={product.imageUrl} style={styles.productImage} resizeMode="cover" />
-      <View style={styles.userInfoContainer}>
-        <Image source={require('../assets/images/sellerProfile.png')} style={styles.profileImage} />
-        <View style={styles.userInfoText}>
-          <Text style={styles.username}>세연</Text>
-          <Text style={styles.userLocation}>서대문구 신촌동</Text>
+    <SafeAreaView style={GlobalStyles.AndroidSafeArea1}>
+      <View style={styles.container}>
+        <Image source={product.imageUrl} style={styles.productImage} resizeMode="cover" />
+        <View style={styles.userInfoContainer}>
+          <Image source={require('../assets/images/sellerProfile.png')} style={styles.profileImage} />
+          <View style={styles.userInfoText}>
+            <Text style={styles.username}>세연</Text>
+            <Text style={styles.userLocation}>서대문구 신촌동</Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.separator} />
-      <View style={styles.productInfoContainer}>
-        <View style={styles.headerRow}>
-          <Text style={styles.productCategory}>{product.category}</Text>
-          <Text style={styles.productUploadDate}>{getTimeDifference(product.uploadDate)}</Text>
-        </View>
-        <Text style={styles.productName}>{product.name}</Text>
-        <View style={styles.expirDateContainer}>
-          <Text style={styles.productExpirDate}>{product.expirDate}</Text>
-          <View style={styles.tagContainer}>
-            <View style={[styles.tag, { backgroundColor: getTagColor(daysLeft) }]}>
-              <Text style={styles.tagText}>유통기한 {daysLeft}일 남음</Text>
+        <View style={styles.separator} />
+        <View style={styles.productInfoContainer}>
+          <View style={styles.headerRow}>
+            <Text style={styles.productCategory}>{product.category}</Text>
+            <Text style={styles.productUploadDate}>{getTimeDifference(product.uploadDate)}</Text>
+          </View>
+          <Text style={styles.productName}>{product.name}</Text>
+          <View style={styles.expirDateContainer}>
+            <Text style={[styles.productExpirDate, {color : getColor(daysLeft)}]}>{product.expirDate}</Text>
+            <View style={[styles.tag, { borderColor: getColor(daysLeft) }]}>
+              <Text style={[styles.tagText, { color: getColor(daysLeft) }]}>
+                유통기한 {daysLeft}일 남음
+              </Text>
             </View>
             {isExpiringSoon && (
               <View style={[styles.tag, styles.expiringSoonTag]}>
-                <Text style={styles.tagText}>임박</Text>
+                <Text style={styles.expiringSoonText}>임박</Text>
               </View>
             )}
           </View>
+          <Text style={styles.productSummary}>{product.summary}</Text>
+          <Text style={styles.productDetails}>서문쪽 연희노가리 근처에서 직거래 원합니다.</Text>
         </View>
-        <Text style={styles.productSummary}>{product.summary}</Text>
-        <Text style={styles.productDetails}>서문쪽 연희노가리 근처에서 직거래 원합니다.</Text>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.messageButton} onPress={() => navigation.navigate('Chat')}>
+            <Text style={styles.messageButtonText}>메세지 보내기</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.heartButton}>
+            <Text style={styles.heartButtonText}>♡</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.messageButton} onPress={() => navigation.navigate('Chat')}>
-          <Text style={styles.messageButtonText}>메세지 보내기</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.heartButton}>
-          <Text style={styles.heartButtonText}>♡</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -139,29 +142,34 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   expirDateContainer: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 8,
   },
   productExpirDate: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#FF6347',
-  },
-  tagContainer: {
-    flexDirection: 'row',
-    marginTop: 4,
+    marginRight: 8,
   },
   tag: {
     borderRadius: 12,
     paddingHorizontal: 8,
     paddingVertical: 4,
-    marginRight: 8,
+    borderWidth: 1,
+    borderColor: '#FF6347', // 기본 테두리 색상
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   expiringSoonTag: {
     backgroundColor: '#FF3D00',
+    borderColor: '#FF3D00',
+    marginLeft: 8,
   },
   tagText: {
+    fontSize: 12,
+  },
+  expiringSoonText: {
     color: '#fff',
     fontSize: 12,
   },

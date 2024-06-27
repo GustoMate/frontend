@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, SafeAreaView, Platform, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, SafeAreaView, Platform, TouchableOpacity, ScrollView } from 'react-native';
 import GlobalStyles from '../styles/GlobalStyles';
 import { useNavigation } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import OCR from './OCR';
-
 
 const Home: React.FC = () => {
   const [username, setUsername] = useState<string | null>(null);
   const [itemList, setItemList] = useState([]);
+  const [showUploadOptions, setShowUploadOptions] = useState(false);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -32,7 +30,7 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     const fetchItems = async () => {
-      try{
+      try {
         const baseURL = Platform.OS === 'ios' ? 'http://localhost:3000' : 'http://10.0.2.2:3000';
         const response = await fetch(`${baseURL}/items`);
         const data = await response.json();
@@ -43,7 +41,7 @@ const Home: React.FC = () => {
         console.error('Error fetching items:', error);
       }
     };
-    
+
     fetchItems();
   }, []);
 
@@ -63,19 +61,54 @@ const Home: React.FC = () => {
     }
   };
 
+  const formatDate = (expirDate: string) => {
+    return expirDate.slice(2);
+  };
+
   return (
     <SafeAreaView style={GlobalStyles.AndroidSafeArea1}>
-      <Text style={styles.header}>{username}님의 냉장고</Text>
-      <View style={styles.container}>
-        {itemList.slice(0, 6).map((item, index) => (
-          <View key={item.id} style={styles.item}>
-            <Text style={styles.itemName}>{item.name}</Text>
-            <Text style={styles.itemDescription}>{item.description}</Text>
-            <Text style={[styles.itemDate, getDateColor(item.expiration)]}>{item.expiration}</Text>
-          </View>
-        ))}
+      <View style={styles.headerContainer}>
+        <Text style={styles.header}>
+          <Text style={styles.highlightColor}>{username}</Text> 님의 냉장고
+        </Text>
       </View>
-      <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AddIngredient')}>
+      <View style={styles.outerContainer}>
+        <ScrollView contentContainerStyle={styles.innerContainer}>
+          {itemList.map((item) => (
+            <View key={item.id} style={styles.item}>
+              <Text style={styles.itemName}>{item.name}</Text>
+              <Text style={styles.itemDescription}>{item.description}</Text>
+              <Text style={[styles.itemDate, getDateColor(item.expiration)]}>{formatDate(item.expiration)}</Text>
+            </View>
+          ))}
+        </ScrollView>
+      </View>
+      {showUploadOptions && (
+        <View style={styles.uploadOptionsContainer}>
+          <TouchableOpacity 
+            style={styles.uploadOptionButton} 
+            onPress={() => {
+              setShowUploadOptions(false);
+              navigation.navigate('AddDirect');
+            }}
+          >
+            <Text style={styles.uploadOptionText}>직접 입력</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.uploadOptionButton} 
+            onPress={() => {
+              setShowUploadOptions(false);
+              navigation.navigate('OCR');
+            }}
+          >
+            <Text style={styles.uploadOptionText}>영수증 입력</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      <TouchableOpacity 
+        style={styles.addButton} 
+        onPress={() => setShowUploadOptions(!showUploadOptions)}
+      >
         <Text style={styles.addButtonText}>+</Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -83,26 +116,48 @@ const Home: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#4CAF50',
-    marginBottom: 16,
+  headerContainer: {
+    backgroundColor: '#ffffff',
     paddingHorizontal: 16,
+    borderBottomColor: '#e0e0e0',
+    marginBottom: 16,
   },
-  container: {
+  header: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#323232',
+  },
+  highlightColor: {
+    color: '#4ECB71',
+  },
+  outerContainer: {
+    flex: 1,
+    padding: 16,
+    marginHorizontal: 16,
+    marginBottom: 20,
+    backgroundColor: '#ffffff',
+    borderColor: '#D9D9D9',
+    borderWidth: 0.5,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
+    elevation: 5,
+    justifyContent: 'flex-start',
+  },
+  innerContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
   },
   item: {
-    width: '45%',
+    width: '30%',
     aspectRatio: 1,
-    backgroundColor: '#f5f5f5',
-    padding: 16,
+    backgroundColor: '#ffffff',
+    padding: 12,
     marginVertical: 8,
-    borderRadius: 100, // Makes the view circular
+    borderRadius: 50, // Makes the view circular
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000',
@@ -112,17 +167,19 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   itemName: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 8,
+    marginBottom: 4,
+    textAlign: 'center',
   },
   itemDescription: {
-    fontSize: 14,
-    marginBottom: 8,
+    fontSize: 10,
+    marginBottom: 4,
     textAlign: 'center',
   },
   itemDate: {
     fontSize: 14,
+    fontWeight: 'bold',
     color: '#FF5722',
   },
   red: {
@@ -134,11 +191,38 @@ const styles = StyleSheet.create({
   green: {
     color: '#4CAF50',
   },
+  uploadOptionsContainer: {
+    position: 'absolute',
+    bottom: 120,
+    right: 30,
+    alignItems: 'center',
+  },
+  uploadOptionButton: {
+    backgroundColor: '#4ECB71',
+    width: 120,
+    height: 40,
+    padding: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginVertical: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
+    justifyContent: 'center',
+    
+  },
+  uploadOptionText: {
+    color: '#ffffff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
   addButton: {
     position: 'absolute',
-    bottom: 30,
+    bottom: 50,
     right: 30,
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#4ECB71',
     width: 60,
     height: 60,
     borderRadius: 30,

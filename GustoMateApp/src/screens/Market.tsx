@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Images from '../constants/images';
+import GlobalStyles from '../styles/GlobalStyles';
 
 interface Product {
   name: string;
@@ -66,6 +67,21 @@ const getTimeDifference = (uploadDate: string): string => {
   return `${differenceInDays}일 전`;
 };
 
+const getDateColor = (expirDate: string) => {
+  const now = new Date();
+  const expirationDate = new Date(expirDate);
+  const diffTime = expirationDate.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays <= 3) {
+    return styles.red;
+  } else if (diffDays <= 7) {
+    return styles.orange;
+  } else {
+    return styles.green;
+  }
+};
+
 const MarketScreen = () => {
   const username = '김와빅';
   const navigation = useNavigation();
@@ -91,48 +107,52 @@ const MarketScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchBar}
-          placeholder="우리 동네 나눔 재료 검색"
-          value={query}
-          onChangeText={handleSearch}
-        />
-        {query ? (
-          <TouchableOpacity style={styles.clearButton} onPress={handleClearSearch}>
-            <Image source={require('../assets/images/clearIcon.png')} style={styles.clearIcon} />
-          </TouchableOpacity>
-        ) : (
-          <Image source={require('../assets/images/searchIcon.png')} style={styles.searchIcon} />
-        )}
-      </View>
-      <Text style={styles.header}>
-        <Text style={styles.username}>{username}</Text>님을 위한 나눔 재료 추천
-      </Text>
-      <FlatList
-        data={filteredProducts}
-        keyExtractor={(item) => item.name}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => navigation.navigate('ProductDetail', { product: item })}>
-            <View style={styles.productContainer}>
-              <Image source={item.imageUrl} style={styles.productImage} />
-              <View style={styles.productDetails}>
-                <View style={styles.headerRow}>
-                  <Text style={styles.productCategory}>{item.category}</Text>
-                  <Text style={styles.productUploadDate}>{getTimeDifference(item.uploadDate)}</Text>
-                </View>
-                <Text style={styles.productName}>{item.name}</Text>
-                <Text style={styles.productExpirDate}>{item.expirDate} <Text style={styles.expirDateSuffix}>까지</Text></Text>
-                <View style={styles.summaryContainer}>
-                  <Text style={styles.productSummary}>{item.summary}</Text>
+    <SafeAreaView style={GlobalStyles.AndroidSafeArea1}>
+      <View style={styles.container}>
+        <Text style={styles.header}>
+          <Text style={styles.username}>{username}</Text>님을 위한 나눔 재료 추천
+        </Text>
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchBar}
+            placeholder="우리 동네 나눔 재료 검색"
+            value={query}
+            onChangeText={handleSearch}
+          />
+          {query ? (
+            <TouchableOpacity style={styles.clearButton} onPress={handleClearSearch}>
+              <Image source={require('../assets/images/clearIcon.png')} style={styles.clearIcon} />
+            </TouchableOpacity>
+          ) : (
+            <Image source={require('../assets/images/searchIcon.png')} style={styles.searchIcon} />
+          )}
+        </View>
+        
+        <FlatList
+          data={filteredProducts}
+          keyExtractor={(item) => item.name}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => navigation.navigate('ProductDetail', { product: item })}>
+              <View style={styles.productContainer}>
+                <Image source={item.imageUrl} style={styles.productImage} />
+                <View style={styles.productDetails}>
+                  <View style={styles.headerRow}>
+                    <Text style={styles.productCategory}>{item.category}</Text>
+                    <Text style={styles.productUploadDate}>{getTimeDifference(item.uploadDate)}</Text>
+                  </View>
+                  <Text style={styles.productName}>{item.name}</Text>
+                  <Text style={[styles.productExpirDate, getDateColor(item.expirDate)]}>
+                    {item.expirDate} <Text style={styles.expirDateSuffix}>까지</Text></Text>
+                  <View style={styles.summaryContainer}>
+                    <Text style={styles.productSummary}> "{item.summary}" </Text>
+                  </View>
                 </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        )}
-      />
-    </View>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -145,6 +165,7 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 16,
   },
   searchBar: {
@@ -170,6 +191,7 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 18,
+    color: '#323232',
     fontWeight: 'bold',
     marginBottom: 16,
   },
@@ -181,7 +203,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 16,
-    borderBottomWidth: 0.5,
+    borderBottomWidth: 1,
     borderBottomColor: '#ddd',
     paddingBottom: 16,
   },
@@ -209,7 +231,8 @@ const styles = StyleSheet.create({
     color: '#888',
   },
   productName: {
-    fontSize: 16,
+    fontSize: 14,
+    color: '#323232',
     fontWeight: 'bold',
     marginVertical: 4,
   },
@@ -225,17 +248,25 @@ const styles = StyleSheet.create({
   summaryContainer: {
     marginTop: 8,
     padding: 2,
-    borderWidth: 0.5,
+    borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 16,
     alignSelf: 'flex-start',
-    alignContent: 'center',
-    justifyContent: 'center',
   },
   productSummary: {
     fontSize: 12,
     color: '#888',
     paddingHorizontal: 4,
+  },
+
+  red: {
+    color: '#F44336',
+  },
+  orange: {
+    color: '#FF9800',
+  },
+  green: {
+    color: '#4CAF50',
   },
 });
 
