@@ -41,7 +41,7 @@ const SignUpScreen = () => {
 
         if (response.ok) {
           Alert.alert('Success', '회원가입 성공');
-          navigation.navigate('SignIn');
+          navigation.navigate('Preference');
         } else {
           Alert.alert('Error', data.detail || '회원가입 실패');
         }

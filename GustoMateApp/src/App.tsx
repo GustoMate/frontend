@@ -121,7 +121,7 @@ const App: React.FC = () => {
         <Tab.Screen name="HomeStack" component={HomeStack} options={{ headerShown: false }}/>
         <Tab.Screen name="MarketStack" component={MarketStack} options={{ headerShown: false }}/>
         <Tab.Screen name="RecipeStack" component={RecipeStack} options={{ headerShown: false }}/>
-        <Tab.Screen name="SignIn" component={SignIn} />
+        <Tab.Screen name="Login" component={Login} />
         <Tab.Screen name="Preference" component={Preference} />
       </Tab.Navigator>
     </NavigationContainer>

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Keyboard, Platform, Alert, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Platform, Alert, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import GlobalStyles from '../styles/GlobalStyles';
 
 const LoginScreen = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const navigation = useNavigation();
@@ -13,9 +13,9 @@ const LoginScreen = () => {
     try {
       const baseURL = Platform.OS === 'ios' ? 'http://localhost:8000' : 'http://10.0.2.2:8000';
       const formBody = new URLSearchParams();
-      formBody.append('email', email);
+      formBody.append('username', username);  // email 대신 username 사용
       formBody.append('password', password);
-      
+
       const response = await fetch(`${baseURL}/account/login`, {
         method: 'POST',
         headers: {
@@ -23,57 +23,67 @@ const LoginScreen = () => {
         },
         body: formBody.toString(),
       });
-      console.log('Request Body:', formBody);  // 디버깅을 위해 요청 본문 출력
+      console.log('Request Body:', formBody.toString());  // 디버깅을 위해 요청 본문 출력
 
-      const data = await response.json();
+      const responseText = await response.text();
+      console.log('Response Text:', responseText);  // 디버깅을 위해 응답 텍스트 출력
 
-      if (response.ok) {
-        Alert.alert('Success', '로그인 성공');
-        navigation.navigate('Preference');
-      } else {
-        Alert.alert('Error', data.detail || '로그인 실패');
+      try {
+        const data = JSON.parse(responseText);
+        console.log('Response Data:', data);  // 디버깅을 위해 응답 데이터 출력
+
+        if (response.ok) {
+          // Alert.alert('Success', '로그인 성공');
+          navigation.navigate('MainTabNavigator');  // 네비게이션 페이지 이름 확인
+        } else {
+          Alert.alert('Error', data.detail || '로그인 실패');
+        }
+      } catch (error) {
+        console.error('Error parsing JSON:', error);
+        Alert.alert('Error', '서버 응답을 처리하는 중 문제가 발생했습니다.');
       }
     } catch (error) {
+      console.error('Error:', error);  // 디버깅을 위해 에러 출력
       Alert.alert('Error', '문제가 발생했습니다. 나중에 다시 시도하세요.');
     }
   };
 
   return (
-  <SafeAreaView style={GlobalStyles.AndroidSafeArea1}>
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.headerText}>로그인</Text>
+    <SafeAreaView style={GlobalStyles.AndroidSafeArea1}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.headerText}>로그인</Text>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>아이디</Text>
-        <TextInput
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-          placeholder="아이디(이메일주소)를 입력하세요"
-          placeholderTextColor="#B3B3B3"
-        />
-      </View>
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>비밀번호</Text>
-        <TextInput
-          style={styles.input}
-          value={password}
-          onChangeText={setPassword}
-          placeholder="비밀번호를 입력하세요"
-          placeholderTextColor="#B3B3B3"
-          secureTextEntry
-        />
-      </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>아이디</Text>
+          <TextInput
+            style={styles.input}
+            value={username}  // email 대신 username 사용
+            onChangeText={setUsername}
+            placeholder="아이디(이메일주소)를 입력하세요"
+            placeholderTextColor="#B3B3B3"
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>비밀번호</Text>
+          <TextInput
+            style={styles.input}
+            value={password}
+            onChangeText={setPassword}
+            placeholder="비밀번호를 입력하세요"
+            placeholderTextColor="#B3B3B3"
+            secureTextEntry
+          />
+        </View>
 
-      <TouchableOpacity
-        style={[styles.button, !email || !password ? styles.disabledButton : null]}
-        onPress={handleLogin}
-        disabled={!email || !password}
-      >
-        <Text style={styles.buttonText}>다음</Text>
-      </TouchableOpacity>
-    </ScrollView>
-  </SafeAreaView>
+        <TouchableOpacity
+          style={[styles.button, !username || !password ? styles.disabledButton : null]}  
+          onPress={handleLogin}
+          disabled={!username || !password}  
+        >
+          <Text style={styles.buttonText}>다음</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

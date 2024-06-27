@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView, Keyboard, SafeAreaView, Picker } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, ScrollView, Keyboard, SafeAreaView, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import GlobalStyles from '../styles/GlobalStyles';
 
@@ -15,10 +15,49 @@ const PreferenceScreen = () => {
 
     const navigation = useNavigation();
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (isButtonActive) {
             Keyboard.dismiss();
-            navigation.navigate('MainTabNavigator');
+            const baseURL = Platform.OS === 'ios' ? 'http://localhost:8000' : 'http://10.0.2.2:8000';
+
+            // 입력 데이터 변환
+            const cookingSkillMap: { [key: string]: number } = { '왕초보': 1, '초보': 2, '중수': 3, '고수': 4 };
+            const isDietingMap: { [key: string]: boolean } = { '안해요': false, '다이어트 중이에요': true };
+            const allergyList = hasAllergies === '있어요' ? allergyTypes.concat(otherAllergy ? [otherAllergy] : []) : [''];
+
+            const body = {
+                spiciness_preference: parseInt(spiceLevel, 10),
+                cooking_skill: cookingSkillMap[cookingSkill],
+                is_on_diet: isDietingMap[isDieting],
+                has_allergies: hasAllergies === '있어요',
+                allergies: allergyList.length > 0 ? allergyList : [''],
+            };
+
+            try {
+                const response = await fetch(`${baseURL}/preferences/`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(body, (key, value) => {
+                        // 문자열을 올바르게 인코딩
+                        if (typeof value === 'string') {
+                            return decodeURIComponent(encodeURIComponent(value));
+                        }
+                        return value;
+                    }),
+                });
+
+                if (response.ok) {
+                    console.log('Preferences submitted successfully');
+                    navigation.navigate('Login');
+                } else {
+                    const data = await response.json();
+                    console.error('Error:', data.detail || 'Preferences submission failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
         }
     };
 
@@ -32,12 +71,12 @@ const PreferenceScreen = () => {
 
     return (
         <SafeAreaView style={GlobalStyles.AndroidSafeArea1}>
-        <View style={styles.container}>
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <Text style={styles.headerText}>
-                    선호도를 알려주시면 레시피 추천에 도움이 돼요
-                </Text>
-                <View style={styles.section}>
+            <View style={styles.container}>
+                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                    <Text style={styles.headerText}>
+                        선호도를 알려주시면 레시피 추천에 도움이 돼요
+                    </Text>
+                    <View style={styles.section}>
                         <Text style={styles.sectionTitle}>맵기 정도</Text>
                         <ScrollView
                             horizontal
@@ -56,90 +95,90 @@ const PreferenceScreen = () => {
                         </ScrollView>
                     </View>
 
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>요리 난이도</Text>
-                    <View style={styles.buttonContainer}>
-                        {['왕초보', '초보', '중급', '고수'].map((skill) => (
-                            <TouchableOpacity
-                                key={skill}
-                                style={[styles.button, cookingSkill === skill && styles.activeButton]}
-                                onPress={() => setCookingSkill(skill)}
-                            >
-                                <Text style={[styles.buttonText, cookingSkill === skill && styles.activeButtonText]}>{skill}</Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-                </View>
-
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>다이어트 여부</Text>
-                    <View style={styles.buttonContainer}>
-                        {['안해요', '다이어트 중이에요'].map((diet) => (
-                            <TouchableOpacity
-                                key={diet}
-                                style={[styles.button, isDieting === diet && styles.activeButton]}
-                                onPress={() => setIsDieting(diet)}
-                            >
-                                <Text style={[styles.buttonText, isDieting === diet && styles.activeButtonText]}>{diet}</Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-                </View>
-
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>알레르기 여부</Text>
-                    <View style={styles.buttonContainer}>
-                        {['없어요', '있어요'].map((allergy) => (
-                            <TouchableOpacity
-                                key={allergy}
-                                style={[styles.button, hasAllergies === allergy && styles.activeButton]}
-                                onPress={() => {
-                                    setHasAllergies(allergy);
-                                    if (allergy === '없어요') {
-                                        setAllergyTypes([]);
-                                        setOtherAllergy('');
-                                    }
-                                }}
-                            >
-                                <Text style={[styles.buttonText, hasAllergies === allergy && styles.activeButtonText]}>{allergy}</Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-                </View>
-
-                {hasAllergies === '있어요' && (
                     <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>알레르기 종류</Text>
+                        <Text style={styles.sectionTitle}>요리 실력</Text>
                         <View style={styles.buttonContainer}>
-                            {['달걀', '생선', '조개', '땅콩', '우유', '밀', '밤', '콩'].map((type) => (
+                            {['왕초보', '초보', '중수', '고수'].map((skill) => (
                                 <TouchableOpacity
-                                    key={type}
-                                    style={[styles.button, allergyTypes.includes(type) && styles.activeButton]}
-                                    onPress={() => toggleAllergyType(type)}
+                                    key={skill}
+                                    style={[styles.button, cookingSkill === skill && styles.activeButton]}
+                                    onPress={() => setCookingSkill(skill)}
                                 >
-                                    <Text style={[styles.buttonText, allergyTypes.includes(type) && styles.activeButtonText]}>{type}</Text>
+                                    <Text style={[styles.buttonText, cookingSkill === skill && styles.activeButtonText]}>{skill}</Text>
                                 </TouchableOpacity>
                             ))}
                         </View>
-                        <TextInput
-                            style={styles.textInput}
-                            value={otherAllergy}
-                            onChangeText={setOtherAllergy}
-                            placeholder="기타 알레르기 (입력하세요)"
-                            placeholderTextColor="#B3B3B3"
-                        />
                     </View>
-                )}
-            </ScrollView>
 
-            <TouchableOpacity
-                style={[styles.submitButton, !isButtonActive && styles.disabledButton]}
-                disabled={!isButtonActive}
-                onPress={handleSubmit}
-            >
-                <Text style={[styles.submitButtonText, !isButtonActive && styles.disabledButtonText]}>추천받기</Text>
-            </TouchableOpacity>
-        </View>
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>다이어트 여부</Text>
+                        <View style={styles.buttonContainer}>
+                            {['안해요', '다이어트 중이에요'].map((diet) => (
+                                <TouchableOpacity
+                                    key={diet}
+                                    style={[styles.button, isDieting === diet && styles.activeButton]}
+                                    onPress={() => setIsDieting(diet)}
+                                >
+                                    <Text style={[styles.buttonText, isDieting === diet && styles.activeButtonText]}>{diet}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </View>
+
+                    <View style={styles.section}>
+                        <Text style={styles.sectionTitle}>알레르기 여부</Text>
+                        <View style={styles.buttonContainer}>
+                            {['없어요', '있어요'].map((allergy) => (
+                                <TouchableOpacity
+                                    key={allergy}
+                                    style={[styles.button, hasAllergies === allergy && styles.activeButton]}
+                                    onPress={() => {
+                                        setHasAllergies(allergy);
+                                        if (allergy === '없어요') {
+                                            setAllergyTypes([]);
+                                            setOtherAllergy('');
+                                        }
+                                    }}
+                                >
+                                    <Text style={[styles.buttonText, hasAllergies === allergy && styles.activeButtonText]}>{allergy}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </View>
+
+                    {hasAllergies === '있어요' && (
+                        <View style={styles.section}>
+                            <Text style={styles.sectionTitle}>알레르기 종류</Text>
+                            <View style={styles.buttonContainer}>
+                                {['달걀', '생선', '조개', '땅콩', '우유', '밀', '밤', '콩'].map((type) => (
+                                    <TouchableOpacity
+                                        key={type}
+                                        style={[styles.button, allergyTypes.includes(type) && styles.activeButton]}
+                                        onPress={() => toggleAllergyType(type)}
+                                    >
+                                        <Text style={[styles.buttonText, allergyTypes.includes(type) && styles.activeButtonText]}>{type}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                            <TextInput
+                                style={styles.textInput}
+                                value={otherAllergy}
+                                onChangeText={setOtherAllergy}
+                                placeholder="기타 알레르기 (입력하세요)"
+                                placeholderTextColor="#B3B3B3"
+                            />
+                        </View>
+                    )}
+                </ScrollView>
+
+                <TouchableOpacity
+                    style={[styles.submitButton, !isButtonActive && styles.disabledButton]}
+                    disabled={!isButtonActive}
+                    onPress={handleSubmit}
+                >
+                    <Text style={[styles.submitButtonText, !isButtonActive && styles.disabledButtonText]}>가입 완료하기</Text>
+                </TouchableOpacity>
+            </View>
         </SafeAreaView>
     );
 };
