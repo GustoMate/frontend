@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image, SafeAreaView, Alert, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import GlobalStyles from '../styles/GlobalStyles';
 
@@ -7,17 +7,27 @@ const OCRScreen = () => {
     const [selectedImage, setSelectedImage] = useState(null);
     const navigation = useNavigation();
 
-    // 이미지 업로드 (picker-image 아니면 서버 전송?)
     const pickImage = () => {
-        setSelectedImage('../assets/images/receipt.jpg');
+        const localImage = require('../assets/images/receipt_image.jpg');
+        setSelectedImage(localImage);
     };
 
-    const handleOCR = () => {
-        // OCR 기능 추가
-        // ...
-
-        // OCR 기능 완료 후 페이지 이동
-        navigation.navigate('AddIngredient');
+    const handleOCR = async () => {
+        try {
+            const baseURL = Platform.OS === 'ios' ? 'http://localhost:8000' : 'http://10.0.2.2:8000';
+            const response = await fetch(`${baseURL}/OCR`);
+            const data = await response.json();
+            if (response.ok) {
+                console.log(data);
+                navigation.navigate('AddIngredient', { ocrResults: data });
+            } else {
+                console.error('Error fetching OCR results:', data.detail);
+                Alert.alert('Error', 'Failed to get OCR results');
+            }
+        } catch (error) {
+            console.error('Error fetching OCR results:', error);
+            Alert.alert('Error', 'An error occurred while processing OCR');
+        }
     };
 
     return (
@@ -28,11 +38,11 @@ const OCRScreen = () => {
 
             <View style={styles.container}>
                 <View style={styles.imageContainer}>
-                        {selectedImage ? (
-                            <Image source={{ uri: selectedImage }} style={styles.image} />
-                        ) : (
-                            <Text style={styles.imagePlaceholderText}>이미지가 여기에 표시됩니다</Text>
-                        )}
+                    {selectedImage ? (
+                        <Image source={selectedImage} style={styles.image} />
+                    ) : (
+                        <Text style={styles.imagePlaceholderText}>이미지가 여기에 표시됩니다</Text>
+                    )}
                 </View>
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity style={styles.button} onPress={pickImage}>
@@ -53,7 +63,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         borderBottomColor: '#e0e0e0',
         marginBottom: 16,
-      },
+    },
     headerText: {
         fontSize: 18,
         fontWeight: 'bold',
@@ -75,8 +85,8 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     image: {
-        width: '100%',
-        height: '100%',
+        width: '90%',
+        height: '90%',
         resizeMode: 'cover',
     },
     imagePlaceholderText: {

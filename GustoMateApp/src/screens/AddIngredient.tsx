@@ -1,43 +1,45 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, SafeAreaView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, SafeAreaView, ScrollView, Alert, Platform } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import GlobalStyles from '../styles/GlobalStyles';
 
-const initialReceiptData = [
-    {
-        id: 1,
-        ingredient: '계란',
-        description: '풀무원 신선한 목초란 12구',
-        quantity: '1',
-        expiryDate: ''
-    },
-    {
-        id: 2,
-        ingredient: '라면',
-        description: '농심) 신라면',
-        quantity: '1',
-        expiryDate: ''
-    }
-];
+const AddIngredient = () => {
+    const route = useRoute();
+    const navigation = useNavigation();
+    const ocrResults = route.params?.ocrResults || [];
 
-// 데이터 냉장고로 보내는 과정 필요
+    const transformOCRData = (ocrData) => {
+        const items = ocrData[0].Item;
+        const cleanedItems = ocrData[0]["Cleaned Item"];
 
-const AddIngredient: React.FC = () => {
-    const [receiptList, setReceiptList] = useState(initialReceiptData);
-    const [isEditing, setIsEditing] = useState<{ [key: string]: boolean }>({});
+        return Object.keys(items).map((key, index) => ({
+            id: index + 1,
+            name: cleanedItems[key],
+            description: items[key],
+            expiration: '2024-08-28' // 예시로 유통기한을 임의로 설정
+        }));
+    };
+
+    const [receiptList, setReceiptList] = useState([]);
+    const [isEditing, setIsEditing] = useState({});
     const [year, setYear] = useState('2024년');
     const [month, setMonth] = useState('6월');
     const [day, setDay] = useState('28일');
-    const navigation = useNavigation();
 
-    const handleEditToggle = (id: number, key: string) => {
+    useEffect(() => {
+        if (ocrResults.length > 0) {
+            setReceiptList(transformOCRData(ocrResults));
+        }
+    }, [ocrResults]);
+
+    const handleEditToggle = (id, key) => {
         setIsEditing(prev => ({
             ...prev,
             [`${id}-${key}`]: !prev[`${id}-${key}`]
         }));
     };
 
-    const handleInputChange = (id: number, key: string, value: string) => {
+    const handleInputChange = (id, key, value) => {
         setReceiptList(prev =>
             prev.map(item =>
                 item.id === id ? { ...item, [key]: value } : item
@@ -45,20 +47,10 @@ const AddIngredient: React.FC = () => {
         );
     };
 
-    const handleExpiryDateChange = (id: number, value: string) => {
-        setReceiptList(prev =>
-            prev.map(item =>
-                item.id === id ? { ...item, expiryDate: value } : item
-            )
-        );
-    };
-
     const handleRegister = () => {
-        // Handle register logic
         console.log('Registered:', receiptList);
-        // 서버에 데이터 저장 로직 추가
-        // 데이터를 저장한 후 Home으로 이동
-        navigation.navigate('Home');
+        // Home 화면으로 데이터 전달
+        navigation.navigate('Home', { newIngredients: receiptList });
     };
 
     return (
@@ -70,79 +62,61 @@ const AddIngredient: React.FC = () => {
             <View style={styles.container}>
                 <View style={styles.dateContainer}>
                     <Text style={styles.dateText}>{year} {month} {day}</Text>
-                    {/* <TouchableOpacity style={styles.editButton} onPress={() => {}}>
-                        <Text style={styles.editButtonText}>수정하기</Text>
-                    </TouchableOpacity> */}
                 </View>
-                <View style={styles.receiptDetails}>
-                    <Text style={styles.detailsHeader}>영수증 내역</Text>
-                    <View style={styles.receiptRow}>
-                        <Text style={[styles.receiptColumn, styles.ingredientColumn, styles.columnHeader]}>식재료명</Text>
-                        <Text style={[styles.receiptColumn, styles.descriptionColumn, styles.columnHeader]}>상세 설명</Text>
-                        <Text style={[styles.receiptColumn, styles.quantityColumn, styles.columnHeader]}>수량</Text>
-                        <Text style={[styles.receiptColumn, styles.expiryDateColumn, styles.columnHeader]}>유통기한</Text>
-                    </View>
-                    {receiptList.map((item) => (
-                        <View key={item.id} style={styles.receiptRow}>
-                            <TouchableOpacity
-                                style={[styles.receiptColumn, styles.ingredientColumn]}
-                                onPress={() => handleEditToggle(item.id, 'ingredient')}
-                            >
-                                {isEditing[`${item.id}-ingredient`] ? (
-                                    <TextInput
-                                        style={styles.input}
-                                        value={item.ingredient}
-                                        onChangeText={(value) => handleInputChange(item.id, 'ingredient', value)}
-                                        onBlur={() => handleEditToggle(item.id, 'ingredient')}
-                                        autoFocus
-                                    />
-                                ) : (
-                                    <Text style={styles.receiptText}>{item.ingredient}</Text>
-                                )}
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[styles.receiptColumn, styles.descriptionColumn]}
-                                onPress={() => handleEditToggle(item.id, 'description')}
-                            >
-                                {isEditing[`${item.id}-description`] ? (
-                                    <TextInput
-                                        style={styles.input}
-                                        value={item.description}
-                                        onChangeText={(value) => handleInputChange(item.id, 'description', value)}
-                                        onBlur={() => handleEditToggle(item.id, 'description')}
-                                        autoFocus
-                                    />
-                                ) : (
-                                    <Text style={styles.receiptText}>{item.description}</Text>
-                                )}
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[styles.receiptColumn, styles.quantityColumn]}
-                                onPress={() => handleEditToggle(item.id, 'quantity')}
-                            >
-                                {isEditing[`${item.id}-quantity`] ? (
-                                    <TextInput
-                                        style={styles.input}
-                                        value={item.quantity}
-                                        onChangeText={(value) => handleInputChange(item.id, 'quantity', value)}
-                                        onBlur={() => handleEditToggle(item.id, 'quantity')}
-                                        autoFocus
-                                    />
-                                ) : (
-                                    <Text style={styles.receiptText}>{item.quantity}</Text>
-                                )}
-                            </TouchableOpacity>
-                            <View style={[styles.receiptColumn, styles.expiryDateColumn]}>
-                                <TextInput
-                                    style={styles.input}
-                                    value={item.expiryDate}
-                                    onChangeText={(value) => handleExpiryDateChange(item.id, value)}
-                                    placeholder="유통기한 입력"
-                                />
-                            </View>
+                <ScrollView style={styles.scrollView}>
+                    <View style={styles.receiptDetails}>
+                        <Text style={styles.detailsHeader}>영수증 내역</Text>
+                        <View style={styles.receiptRow}>
+                            <Text style={[styles.receiptColumn, styles.ingredientColumn, styles.columnHeader]}>식재료명</Text>
+                            <Text style={[styles.receiptColumn, styles.descriptionColumn, styles.columnHeader]}>상세 설명</Text>
+                            <Text style={[styles.receiptColumn, styles.expiryDateColumn, styles.columnHeader]}>유통기한</Text>
                         </View>
-                    ))}
-                </View>
+                        {receiptList.map((item) => (
+                            <View key={item.id} style={styles.receiptRow}>
+                                <TouchableOpacity
+                                    style={[styles.receiptColumn, styles.ingredientColumn]}
+                                    onPress={() => handleEditToggle(item.id, 'ingredient')}
+                                >
+                                    {isEditing[`${item.id}-ingredient`] ? (
+                                        <TextInput
+                                            style={styles.input}
+                                            value={item.name}
+                                            onChangeText={(value) => handleInputChange(item.id, 'name', value)}
+                                            onBlur={() => handleEditToggle(item.id, 'ingredient')}
+                                            autoFocus
+                                        />
+                                    ) : (
+                                        <Text style={styles.receiptText}>{item.name}</Text>
+                                    )}
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.receiptColumn, styles.descriptionColumn]}
+                                    onPress={() => handleEditToggle(item.id, 'description')}
+                                >
+                                    {isEditing[`${item.id}-description`] ? (
+                                        <TextInput
+                                            style={styles.input}
+                                            value={item.description}
+                                            onChangeText={(value) => handleInputChange(item.id, 'description', value)}
+                                            onBlur={() => handleEditToggle(item.id, 'description')}
+                                            autoFocus
+                                        />
+                                    ) : (
+                                        <Text style={styles.receiptText}>{item.description}</Text>
+                                    )}
+                                </TouchableOpacity>
+                                <View style={[styles.receiptColumn, styles.expiryDateColumn]}>
+                                    <TextInput
+                                        style={styles.input}
+                                        value={item.expiration}
+                                        onChangeText={(value) => handleInputChange(item.id, 'expiration', value)}
+                                        placeholder="유통기한 입력"
+                                    />
+                                </View>
+                            </View>
+                        ))}
+                    </View>
+                </ScrollView>
                 <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
                     <Text style={styles.registerButtonText}>등록</Text>
                 </TouchableOpacity>
@@ -178,14 +152,9 @@ const styles = StyleSheet.create({
     dateText: {
         fontSize: 16,
     },
-    // editButton: {
-    //     backgroundColor: '#e0e0e0',
-    //     padding: 10,
-    //     borderRadius: 5,
-    // },
-    // editButtonText: {
-    //     fontSize: 10,
-    // },
+    scrollView: {
+        flex: 1,
+    },
     receiptDetails: {
         backgroundColor: '#FFF',
         padding: 10,
@@ -223,9 +192,6 @@ const styles = StyleSheet.create({
     },
     descriptionColumn: {
         flex: 4,
-    },
-    quantityColumn: {
-        flex: 1,
     },
     expiryDateColumn: {
         flex: 2,

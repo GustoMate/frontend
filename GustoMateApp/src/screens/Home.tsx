@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, SafeAreaView, Platform, TouchableOpacity, ScrollView } from 'react-native';
 import GlobalStyles from '../styles/GlobalStyles';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const Home: React.FC = () => {
-  const [username, setUsername] = useState<string | null>(null);
   const [itemList, setItemList] = useState([]);
   const [showUploadOptions, setShowUploadOptions] = useState(false);
   const navigation = useNavigation();
+  const route = useRoute();
 
   useEffect(() => {
     const fetchName = async () => {
@@ -15,11 +15,6 @@ const Home: React.FC = () => {
         const baseURL = Platform.OS === 'ios' ? 'http://localhost:3000' : 'http://10.0.2.2:3000';
         const response = await fetch(`${baseURL}/users`);
         const data = await response.json();
-        if (response.ok) {
-          setUsername(data[0].username);
-        } else {
-          console.error('Error fetching name:', data.message);
-        }
       } catch (error) {
         console.error('Error fetching name:', error);
       }
@@ -45,6 +40,12 @@ const Home: React.FC = () => {
     fetchItems();
   }, []);
 
+  useEffect(() => {
+    if (route.params?.newIngredients) {
+        setItemList(prevItemList => [...prevItemList, ...route.params.newIngredients]);
+    }
+}, [route.params?.newIngredients]);
+
   const getDateColor = (expirDate: string) => {
     const formattedDate = expirDate.replace(/\//g, '-');
     const now = new Date();
@@ -69,7 +70,7 @@ const Home: React.FC = () => {
     <SafeAreaView style={GlobalStyles.AndroidSafeArea1}>
       <View style={styles.headerContainer}>
         <Text style={styles.header}>
-          <Text style={styles.highlightColor}>{username}</Text> 님의 냉장고
+          나의 냉장고
         </Text>
       </View>
       <View style={styles.outerContainer}>
