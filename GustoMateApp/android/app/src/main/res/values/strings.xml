@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">GustoMateApp</string>
+    <string name="kakao_app_key">83a61d272f3e05f798cf9d9af0b8b0e4</string> <!-- Add this line -->
 </resources>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Platform, Alert, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import GlobalStyles from '../styles/GlobalStyles';
+import { login as kakaoLogin, getProfile as getKakaoProfile } from '@react-native-seoul/kakao-login';
 
 const LoginScreen = () => {
   const [username, setUsername] = useState('');
@@ -33,7 +34,6 @@ const LoginScreen = () => {
         console.log('Response Data:', data);  // 디버깅을 위해 응답 데이터 출력
 
         if (response.ok) {
-          // Alert.alert('Success', '로그인 성공');
           navigation.navigate('MainTabNavigator');  // 네비게이션 페이지 이름 확인
         } else {
           Alert.alert('Error', data.detail || '로그인 실패');
@@ -45,6 +45,21 @@ const LoginScreen = () => {
     } catch (error) {
       console.error('Error:', error);  // 디버깅을 위해 에러 출력
       Alert.alert('Error', '문제가 발생했습니다. 나중에 다시 시도하세요.');
+    }
+  };
+
+  const handleKakaoLogin = async () => {
+    try {
+      const token = await kakaoLogin();
+      const profile = await getKakaoProfile();
+      Alert.alert('Success', `Logged in as ${profile.nickname}`);
+      console.log('Kakao Token:', token);
+      console.log('Kakao Profile:', profile);
+      // Perform further actions such as navigating to another screen or making API calls
+      navigation.navigate('MainTabNavigator');
+    } catch (err) {
+      console.error('Kakao Login Failed:', err);
+      Alert.alert('Error', 'Kakao 로그인 실패');
     }
   };
 
@@ -81,6 +96,13 @@ const LoginScreen = () => {
           disabled={!username || !password}  
         >
           <Text style={styles.buttonText}>다음</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.button, styles.kakaoButton]}
+          onPress={handleKakaoLogin}
+        >
+          <Text style={styles.buttonText}>카카오로 로그인</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -134,6 +156,10 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  kakaoButton: {
+    backgroundColor: '#FEE500',
+    marginTop: 12,
   },
 });
 

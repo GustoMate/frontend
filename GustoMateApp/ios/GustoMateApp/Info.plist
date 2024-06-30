@@ -48,5 +48,32 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	
+	<!-- Kakao configuration start -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kakao83a61d272f3e05f798cf9d9af0b8b0e4</string>
+			</array>
+		</dict>
+	</array>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>KAKAO_APP_KEY</key>
+	<string>83a61d272f3e05f798cf9d9af0b8b0e4</string>
+	<key>KAKAO_APP_SCHEME</key>
+	<string>kakaotalk</string> <!-- 예시로 kakaotalk 사용 -->
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>kakao0123456789</string>
+		<string>kakaokompassauth</string>
+		<string>storykompassauth</string>
+		<string>kakaolink</string>
+	</array>
+	<!-- Kakao configuration end -->
 </dict>
 </plist>

@@ -9,6 +9,7 @@
       android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
       android:theme="@style/AppTheme">
+      
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"
@@ -19,6 +20,21 @@
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+      </activity>
+
+      <!-- Kakao Redirect URI setup -->
+      <activity
+        android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
+        android:exported="true">
+        <intent-filter>
+          <action android:name="android.intent.action.VIEW" />
+          <category android:name="android.intent.category.DEFAULT" />
+          <category android:name="android.intent.category.BROWSABLE" />
+
+          <!-- Replace {카카오 네이티브 앱 key를 입력해주세요} with your actual native app key -->
+          <data android:host="oauth"
+                android:scheme="kakao83a61d272f3e05f798cf9d9af0b8b0e4" />
         </intent-filter>
       </activity>
     </application>
