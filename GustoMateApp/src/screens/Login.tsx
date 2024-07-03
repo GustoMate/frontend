@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import GlobalStyles from '../styles/GlobalStyles';
 import { login as kakaoLogin, getProfile as getKakaoProfile } from '@react-native-seoul/kakao-login';
 
-const LoginScreen = () => {
+const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -14,7 +14,7 @@ const LoginScreen = () => {
     try {
       const baseURL = Platform.OS === 'ios' ? 'http://localhost:8000' : 'http://10.0.2.2:8000';
       const formBody = new URLSearchParams();
-      formBody.append('username', username);  // email 대신 username 사용
+      formBody.append('username', username);
       formBody.append('password', password);
 
       const response = await fetch(`${baseURL}/account/login`, {
@@ -24,17 +24,17 @@ const LoginScreen = () => {
         },
         body: formBody.toString(),
       });
-      console.log('Request Body:', formBody.toString());  // 디버깅을 위해 요청 본문 출력
+      console.log('Request Body:', formBody.toString());
 
       const responseText = await response.text();
-      console.log('Response Text:', responseText);  // 디버깅을 위해 응답 텍스트 출력
+      console.log('Response Text:', responseText);
 
       try {
         const data = JSON.parse(responseText);
-        console.log('Response Data:', data);  // 디버깅을 위해 응답 데이터 출력
+        console.log('Response Data:', data);
 
         if (response.ok) {
-          navigation.navigate('MainTabNavigator');  // 네비게이션 페이지 이름 확인
+          navigation.navigate('MainTabNavigator');
         } else {
           Alert.alert('Error', data.detail || '로그인 실패');
         }
@@ -43,7 +43,7 @@ const LoginScreen = () => {
         Alert.alert('Error', '서버 응답을 처리하는 중 문제가 발생했습니다.');
       }
     } catch (error) {
-      console.error('Error:', error);  // 디버깅을 위해 에러 출력
+      console.error('Error:', error);
       Alert.alert('Error', '문제가 발생했습니다. 나중에 다시 시도하세요.');
     }
   };
@@ -52,11 +52,25 @@ const LoginScreen = () => {
     try {
       const token = await kakaoLogin();
       const profile = await getKakaoProfile();
-      Alert.alert('Success', `Logged in as ${profile.nickname}`);
-      console.log('Kakao Token:', token);
-      console.log('Kakao Profile:', profile);
-      // Perform further actions such as navigating to another screen or making API calls
-      navigation.navigate('MainTabNavigator');
+
+      const baseURL = Platform.OS === 'ios' ? 'http://localhost:8000' : 'http://10.0.2.2:8000';
+      const response = await fetch(`${baseURL}/account/kakao/callback`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token: token.accessToken }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        Alert.alert('Success', `Logged in as ${profile.nickname}`);
+        console.log('Kakao Token:', token);
+        console.log('Kakao Profile:', profile);
+        navigation.navigate('MainTabNavigator');
+      } else {
+        Alert.alert('Error', data.detail || '카카오 로그인 실패');
+      }
     } catch (err) {
       console.error('Kakao Login Failed:', err);
       Alert.alert('Error', 'Kakao 로그인 실패');
@@ -72,7 +86,7 @@ const LoginScreen = () => {
           <Text style={styles.label}>아이디</Text>
           <TextInput
             style={styles.input}
-            value={username}  // email 대신 username 사용
+            value={username}
             onChangeText={setUsername}
             placeholder="아이디(이메일주소)를 입력하세요"
             placeholderTextColor="#B3B3B3"
@@ -91,9 +105,9 @@ const LoginScreen = () => {
         </View>
 
         <TouchableOpacity
-          style={[styles.button, !username || !password ? styles.disabledButton : null]}  
+          style={[styles.button, !username || !password ? styles.disabledButton : null]}
           onPress={handleLogin}
-          disabled={!username || !password}  
+          disabled={!username || !password}
         >
           <Text style={styles.buttonText}>다음</Text>
         </TouchableOpacity>
@@ -163,4 +177,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default Login;
